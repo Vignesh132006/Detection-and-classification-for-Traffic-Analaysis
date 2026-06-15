@@ -506,6 +506,7 @@
                 </div>
                 <h3>Upload Traffic Scene</h3>
                 <p>Drag and drop image file here, or click to browse</p>
+                <p style="margin-top: 0.8rem; font-size: 0.9rem;">Or, <span id="try-demo" style="color: #818cf8; text-decoration: underline; font-weight: 600; cursor: pointer; z-index: 10; position: relative;">try with a demo image</span></p>
             </div>
         </div>
 
@@ -625,6 +626,30 @@
                 processFile(activeFile);
             }
         });
+
+        // Try demo interaction
+        document.getElementById('try-demo').addEventListener('click', (e) => {
+            e.stopPropagation();
+            loadDemoImage();
+        });
+
+        function loadDemoImage() {
+            loadingScreen.classList.add('visible');
+            fetch('/static/traffic.jpg')
+                .then(res => {
+                    if (!res.ok) throw new Error("Demo image not found");
+                    return res.blob();
+                })
+                .then(blob => {
+                    const file = new File([blob], 'traffic.jpg', { type: 'image/jpeg' });
+                    activeFile = file;
+                    processFile(file);
+                })
+                .catch(err => {
+                    loadingScreen.classList.remove('visible');
+                    showToast("Could not load demo image: " + err.message);
+                });
+        }
 
         // Tab Switchers
         tabOriginal.addEventListener('click', () => {
