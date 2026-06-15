@@ -110,8 +110,8 @@ def analyze():
             
             return jsonify({
                 'success': True,
-                'original_url': url_for('static', filename=os.path.join('uploads', filename)),
-                'annotated_url': url_for('static', filename=os.path.join('results', output_filename)),
+                'original_url': url_for('static', filename=f"uploads/{filename}"),
+                'annotated_url': url_for('static', filename=f"results/{output_filename}"),
                 'stats': vehicle_count,
                 'total': total_detected
             })
