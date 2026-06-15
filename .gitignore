@@ -1,0 +1,9 @@
+static/uploads/*
+static/results/*
+!static/uploads/.gitkeep
+!static/results/.gitkeep
+__pycache__/
+.ipynb_checkpoints/
+*.pyc
+detected_traffic.jpg
+traffic.jpg

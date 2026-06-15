@@ -1,0 +1,6 @@
+torch
+torchvision
+Pillow
+opencv-python
+matplotlib
+Flask
