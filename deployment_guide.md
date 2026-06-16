@@ -33,7 +33,8 @@ Docker is the recommended approach for deploying this application to cloud platf
    ```
 3. Run the container:
    ```bash
-   docker run -p 5000:5000 --env FLASK_DEBUG=false traffic-analytics
+   # Map host port 5000 to the container port 7860 (exposed by the Dockerfile)
+   docker run -p 5000:7860 --env FLASK_DEBUG=false traffic-analytics
    ```
 4. Access the web app at `http://localhost:5000`.
 
@@ -55,14 +56,45 @@ Render allows you to deploy containerized applications directly:
 6. Click **Deploy Web Service**.
 
 ### Option B: Hugging Face Spaces (Docker-based, Free Tier Available)
-Hugging Face Spaces offers a free Docker SDK space with 16GB CPU RAM:
-1. Create a Hugging Face account and create a new **Space**.
-2. Select **Docker** as the SDK (instead of Streamlit or Gradio).
-3. Select the **Blank** template.
-4. Clone the space repository locally or upload your project files directly through the HF web interface.
-5. Hugging Face will automatically read the `Dockerfile`, build it, and expose the app.
-   > [!NOTE]
-   > Hugging Face Spaces expose port `7860` by default. You can configure Flask to run on port `7860` by setting the environment variable `PORT=7860` in the Space settings, or let the Dockerfile handle it dynamically.
+Hugging Face Spaces offers a free CPU basic tier with **16GB RAM**, which is more than enough to host the Faster R-CNN PyTorch model. Because this is a custom Flask app with PyTorch and OpenCV dependencies, we deploy it using the **Docker SDK**.
+
+#### Why our configuration is optimized for Hugging Face Spaces:
+* **Non-Root User (UID 1000):** Hugging Face Spaces runs containers under user ID `1000` for security. Our updated `Dockerfile` automatically switches to a non-root `user` to avoid file write and cache permissions issues.
+* **Port 7860 default:** Hugging Face requires web apps to listen on port `7860`. Our `Dockerfile` configures `PORT=7860` and `EXPOSE 7860` dynamically.
+* **Pre-baked Weights:** PyTorch model weights are downloaded during the Docker build stage. This ensures instant app startup on Hugging Face Spaces and avoids runtime download timeouts.
+
+#### Step-by-Step Deployment Instructions:
+
+1. **Create a Space on Hugging Face:**
+   * Sign up or log in at [Hugging Face](https://huggingface.co/).
+   * Click your profile icon at the top right and select **New Space** (or go directly to [huggingface.co/new-space](https://huggingface.co/new-space)).
+   * Set a name for your Space (e.g., `traffic-analytics`).
+   * Select **Docker** as the SDK.
+   * Under "Choose a Docker template", select **Blank**.
+   * Choose the **CPU basic (16GB RAM, Free)** hardware tier.
+   * Set the Space visibility (**Public** or **Private**).
+   * Click **Create Space**.
+
+2. **Upload/Push Your Code:**
+   *Hugging Face Spaces are Git repositories. You can upload files directly through the web UI, or use git CLI.*
+   
+   **Using Git CLI:**
+   * Clone your Space repository locally:
+     ```bash
+     git clone https://huggingface.co/spaces/your-username/your-space-name
+     ```
+   * Copy all project files (including `app.py`, `Dockerfile`, `requirements.txt`, the `templates/` directory, and the `static/` directory) into the cloned directory.
+   * Commit and push your files:
+     ```bash
+     git add .
+     git commit -m "Deploy traffic detection dashboard"
+     git push
+     ```
+
+3. **Build and View:**
+   * Navigate to your Space page.
+   * Under the **App** tab, you will see the logs as Hugging Face builds your Docker container.
+   * Once the build is complete, the Space status will change to **Running**, and your dashboard will be interactive directly on the web page!
 
 ### Option C: Railway
 Railway is another quick way to deploy:
