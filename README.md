@@ -74,4 +74,4 @@ python detect.py --image traffic.jpg --output results/my_output.jpg
 
 ## Deployment
 
-Refer to the complete [Deployment Guide](C:\Users\vicky\.gemini\antigravity-ide\brain\63032989-68fc-450c-98c3-c02ac2b8e5ff\deployment_guide.md) file inside the repository for details on setting up cloud servers, Docker containers, or local network sharing.
+Refer to the complete [Deployment Guide](./deployment_guide.md) file inside the repository for details on setting up cloud servers, Docker containers, or local network sharing.
